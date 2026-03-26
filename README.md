@@ -2,9 +2,8 @@
 
 Adds a `Browser` icon to the Activity Bar and opens VS Code's built-in Integrated Browser (introduced in v1.109, January 2026) with bookmark support.
 
-[![Demo](media/demo-poster.svg)](media/integrated-browser-bookmarks-to-activity-bar.mp4)
+![Demo Video](media/demo.gif)
 
-If the demo does not play inline, open or download the video: [Demo video](media/integrated-browser-bookmarks-to-activity-bar.mp4).
 
 ### Features
 

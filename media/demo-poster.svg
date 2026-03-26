@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
-  <rect width="1280" height="720" fill="#0b1220"/>
-  <g transform="translate(640,360)">
-    <circle r="90" fill="#ffffff" fill-opacity="0.12"/>
-    <polygon points="-24,-36 60,0 -24,36" fill="#ffffff"/>
-  </g>
-  <text x="640" y="660" font-size="24" text-anchor="middle" fill="#9ca3af" font-family="Arial, Helvetica, sans-serif">Demo — Click to play</text>
-</svg>

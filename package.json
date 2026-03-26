@@ -4,6 +4,11 @@
   "description": "Adds an Activity Bar shortcut to VS Code's Integrated Browser (introduced in v1.109) with support for Favorite Tabs.",
   "version": "0.0.5",
   "publisher": "local-dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/konashevich/integrated-browser-bookmarks-to-activity-bar.git"
+  },
+  "icon": "media/icon.png",
   "engines": { "vscode": "^1.70.0" },
   "activationEvents": [
     "onView:integratedBrowser.view",
@@ -13,7 +18,9 @@
   "files": [
     "extension.js",
     "README.md",
-    "media/**"
+    "media/browser.svg",
+    "media/icon.png",
+    "media/demo.gif"
   ],
   "categories": ["Other"],
   "contributes": {
