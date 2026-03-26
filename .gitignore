@@ -1,0 +1,7 @@
+node_modules/
+.vscode-test/
+out/
+.DS_Store
+# Ensure VSIX files are included in the repository
+!*.vsix
+!vsix/*.vsix

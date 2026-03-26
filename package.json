@@ -1,0 +1,77 @@
+{
+  "name": "integrated-browser-on-activity-bar",
+  "displayName": "Integrated Browser Button",
+  "description": "Adds an Activity Bar shortcut to VS Code's Integrated Browser (introduced in v1.109) with support for Favorite Tabs.",
+  "version": "0.0.5",
+  "publisher": "local-dev",
+  "engines": { "vscode": "^1.70.0" },
+  "activationEvents": [
+    "onView:integratedBrowser.view",
+    "onCommand:integratedBrowser.open"
+  ],
+  "main": "./extension.js",
+  "files": [
+    "extension.js",
+    "README.md",
+    "media/**"
+  ],
+  "categories": ["Other"],
+  "contributes": {
+    "commands": [
+      {
+        "command": "integratedBrowser.open",
+        "title": "Browser: Open Integrated Browser"
+      },
+      {
+        "command": "integratedBrowser.addFavorite",
+        "title": "Browser: Add Favorite",
+        "icon": "$(add)"
+      },
+      {
+        "command": "integratedBrowser.deleteFavorite",
+        "title": "Browser: Delete Favorite",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "integratedBrowser.openFavorite",
+        "title": "Browser: Open Favorite",
+        "icon": "$(link-external)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "integratedBrowser.addFavorite",
+          "when": "view == integratedBrowser.view",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "integratedBrowser.openFavorite",
+          "when": "view == integratedBrowser.view && viewItem == favorite",
+          "group": "inline"
+        },
+        {
+          "command": "integratedBrowser.deleteFavorite",
+          "when": "view == integratedBrowser.view && viewItem == favorite",
+          "group": "inline"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        { "id": "integratedBrowser", "title": "Browser", "icon": "media/browser.svg" }
+      ]
+    },
+    "views": {
+      "integratedBrowser": [
+        {
+          "id": "integratedBrowser.view",
+          "name": "Integrated Browser",
+          "contextualTitle": "Browser"
+        }
+      ]
+    }
+  }
+}
