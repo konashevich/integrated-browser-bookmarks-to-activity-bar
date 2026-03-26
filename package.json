@@ -15,6 +15,9 @@
     "onCommand:integratedBrowser.open"
   ],
   "main": "./extension.js",
+  "scripts": {
+    "publish": "vsce publish"
+  },
   "files": [
     "extension.js",
     "README.md",
