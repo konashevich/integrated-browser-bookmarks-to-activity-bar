@@ -1,3 +1,4 @@
+const path = require('path');
 const vscode = require('vscode');
 
 class Favorite extends vscode.TreeItem {
@@ -37,6 +38,66 @@ class FavoriteProvider {
   }
 }
 
+function isAbsoluteFilePath(target) {
+  return path.isAbsolute(target) || /^[a-zA-Z]:[\\/]/.test(target);
+}
+
+function normalizeBrowserTarget(target) {
+  if (!target) {
+    return undefined;
+  }
+
+  if (target instanceof vscode.Uri) {
+    return target.toString();
+  }
+
+  if (typeof target !== 'string') {
+    return undefined;
+  }
+
+  const trimmedTarget = target.trim();
+  if (!trimmedTarget) {
+    return undefined;
+  }
+
+  if (isAbsoluteFilePath(trimmedTarget)) {
+    return vscode.Uri.file(trimmedTarget).toString();
+  }
+
+  try {
+    const parsedTarget = vscode.Uri.parse(trimmedTarget, true);
+    if (parsedTarget.scheme) {
+      return parsedTarget.toString();
+    }
+  } catch {
+    // Leave non-URI strings unchanged and let the browser command handle them.
+  }
+
+  return trimmedTarget;
+}
+
+function looksLikeLocalFileTarget(target) {
+  if (!target || typeof target !== 'string') {
+    return false;
+  }
+
+  const trimmedTarget = target.trim();
+  if (!trimmedTarget) {
+    return false;
+  }
+
+  if (isAbsoluteFilePath(trimmedTarget)) {
+    return true;
+  }
+
+  try {
+    const parsedTarget = vscode.Uri.parse(trimmedTarget, true);
+    return parsedTarget.scheme === 'file';
+  } catch {
+    return false;
+  }
+}
+
 function activate(context) {
   const favoriteProvider = new FavoriteProvider(context);
   const treeView = vscode.window.createTreeView('integratedBrowser.view', {
@@ -44,18 +105,20 @@ function activate(context) {
     showCollapseAll: false
   });
 
-  const openIntegratedBrowser = async (url) => {
+  const openIntegratedBrowser = async (target) => {
+    const normalizedTarget = normalizeBrowserTarget(target);
+
     try {
-      if (url) {
+      if (normalizedTarget) {
         // Try simpleBrowser.show first as it's known to accept URL strings directly
-        await vscode.commands.executeCommand('simpleBrowser.show', url);
+        await vscode.commands.executeCommand('simpleBrowser.show', normalizedTarget);
       } else {
         await vscode.commands.executeCommand('workbench.action.browser.open');
       }
     } catch (error) {
       // Fallback: Try workbench.action.browser.open with the URL string
       try {
-        await vscode.commands.executeCommand('workbench.action.browser.open', url);
+        await vscode.commands.executeCommand('workbench.action.browser.open', normalizedTarget);
       } catch (innerError) {
         const message = innerError instanceof Error ? innerError.message : String(innerError);
         void vscode.window.showErrorMessage(`Failed to open integrated browser: ${message}`);
@@ -104,8 +167,36 @@ function activate(context) {
     }
   };
 
+  const openHtmlFile = async (resource) => {
+    const resourceToOpen = resource instanceof vscode.Uri
+      ? resource
+      : vscode.window.activeTextEditor?.document.uri;
+
+    if (!resourceToOpen) {
+      void vscode.window.showInformationMessage('No HTML file is available to open in the integrated browser.');
+      return;
+    }
+
+    await openIntegratedBrowser(resourceToOpen);
+  };
+
+  const openClipboardLocalFile = async () => {
+    const clipboardText = await vscode.env.clipboard.readText();
+
+    if (!looksLikeLocalFileTarget(clipboardText)) {
+      void vscode.window.showInformationMessage(
+        'Clipboard does not contain an absolute local file path or a file:// URL.'
+      );
+      return;
+    }
+
+    await openIntegratedBrowser(clipboardText);
+  };
+
   context.subscriptions.push(
     vscode.commands.registerCommand('integratedBrowser.open', openIntegratedBrowser),
+    vscode.commands.registerCommand('integratedBrowser.openHtmlFile', openHtmlFile),
+    vscode.commands.registerCommand('integratedBrowser.openClipboardLocalFile', openClipboardLocalFile),
     vscode.commands.registerCommand('integratedBrowser.addFavorite', addFavorite),
     vscode.commands.registerCommand('integratedBrowser.deleteFavorite', deleteFavorite),
     vscode.commands.registerCommand('integratedBrowser.openFavorite', openFavorite)

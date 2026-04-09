@@ -2,7 +2,7 @@
   "name": "integrated-browser-on-activity-bar",
   "displayName": "Integrated Browser Button",
   "description": "Adds an Activity Bar shortcut to VS Code's Integrated Browser (introduced in v1.109) with support for Favorite Tabs.",
-  "version": "0.0.8",
+  "version": "0.0.10",
   "publisher": "oleksiiko",
   "repository": {
     "type": "git",
@@ -12,7 +12,9 @@
   "engines": { "vscode": "^1.70.0" },
   "activationEvents": [
     "onView:integratedBrowser.view",
-    "onCommand:integratedBrowser.open"
+    "onCommand:integratedBrowser.open",
+    "onCommand:integratedBrowser.openHtmlFile",
+    "onCommand:integratedBrowser.openClipboardLocalFile"
   ],
   "main": "./extension.js",
   "scripts": {
@@ -34,6 +36,16 @@
         "title": "Browser: Open Integrated Browser"
       },
       {
+        "command": "integratedBrowser.openHtmlFile",
+        "title": "Browser: Open HTML File in Integrated Browser",
+        "icon": "$(globe)"
+      },
+      {
+        "command": "integratedBrowser.openClipboardLocalFile",
+        "title": "Browser: Open Local File from Clipboard",
+        "icon": "$(clippy)"
+      },
+      {
         "command": "integratedBrowser.addFavorite",
         "title": "Browser: Add Favorite",
         "icon": "$(add)"
@@ -50,11 +62,30 @@
       }
     ],
     "menus": {
+      "explorer/context": [
+        {
+          "command": "integratedBrowser.openHtmlFile",
+          "when": "resourceScheme == file && (resourceExtname == '.html' || resourceExtname == '.htm' || resourceExtname == '.xhtml' || resourceExtname == '.HTML' || resourceExtname == '.HTM' || resourceExtname == '.XHTML')",
+          "group": "navigation"
+        }
+      ],
+      "editor/title/context": [
+        {
+          "command": "integratedBrowser.openHtmlFile",
+          "when": "resourceScheme == file && (resourceExtname == '.html' || resourceExtname == '.htm' || resourceExtname == '.xhtml' || resourceExtname == '.HTML' || resourceExtname == '.HTM' || resourceExtname == '.XHTML')",
+          "group": "navigation"
+        }
+      ],
       "view/title": [
+        {
+          "command": "integratedBrowser.openClipboardLocalFile",
+          "when": "view == integratedBrowser.view",
+          "group": "navigation@1"
+        },
         {
           "command": "integratedBrowser.addFavorite",
           "when": "view == integratedBrowser.view",
-          "group": "navigation"
+          "group": "navigation@2"
         }
       ],
       "view/item/context": [
