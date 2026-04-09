@@ -168,13 +168,29 @@ function activate(context) {
   };
 
   const openHtmlFile = async (resource) => {
-    const resourceToOpen = resource instanceof vscode.Uri
+    const activeDocument = vscode.window.activeTextEditor?.document;
+    let resourceToOpen = resource instanceof vscode.Uri
       ? resource
-      : vscode.window.activeTextEditor?.document.uri;
+      : activeDocument?.uri;
 
     if (!resourceToOpen) {
       void vscode.window.showInformationMessage('No HTML file is available to open in the integrated browser.');
       return;
+    }
+
+    if (resourceToOpen.scheme !== 'file') {
+      if (!activeDocument) {
+        void vscode.window.showInformationMessage('Save the HTML file before opening it in the integrated browser.');
+        return;
+      }
+
+      const saved = await activeDocument.save();
+      if (!saved || activeDocument.uri.scheme !== 'file') {
+        void vscode.window.showInformationMessage('Save the HTML file before opening it in the integrated browser.');
+        return;
+      }
+
+      resourceToOpen = activeDocument.uri;
     }
 
     await openIntegratedBrowser(resourceToOpen);
