@@ -5,3 +5,4 @@ out/
 # Ensure VSIX files are included in the repository
 !*.vsix
 !vsix/*.vsix
+PAT Key Azure.txt
